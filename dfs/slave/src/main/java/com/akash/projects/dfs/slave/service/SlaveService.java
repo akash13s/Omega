@@ -11,4 +11,6 @@ public interface SlaveService extends Remote {
     public boolean writeChunk(long chunkId, long offset, int size, byte[] data) throws RemoteException;
 
     public boolean deleteChunk(long chunkId) throws RemoteException;
+
+    public boolean heartbeat() throws RemoteException;
 }

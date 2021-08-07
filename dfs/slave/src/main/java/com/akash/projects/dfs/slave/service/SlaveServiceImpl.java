@@ -28,4 +28,10 @@ public class SlaveServiceImpl extends UnicastRemoteObject implements SlaveServic
     public boolean deleteChunk(long chunkId) throws RemoteException{
         return slave.delete(chunkId, false);
     }
+
+    @Override
+    public boolean heartbeat() throws RemoteException {
+        // we can also add additional checks for heartbeat like disk space
+        return true;
+    }
 }

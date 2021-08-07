@@ -1,6 +1,6 @@
 package com.akash.projects.dfs.slave;
 
-import com.akash.projects.common.Utils;
+import com.akash.projects.common.dfs.Utils;
 import com.akash.projects.dfs.slave.constants.SlaveConstants;
 import com.akash.projects.dfs.slave.service.SlaveService;
 import com.akash.projects.dfs.slave.service.SlaveServiceImpl;
