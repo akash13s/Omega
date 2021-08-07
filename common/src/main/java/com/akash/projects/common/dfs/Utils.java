@@ -1,4 +1,4 @@
-package com.akash.projects.common;
+package com.akash.projects.common.dfs;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

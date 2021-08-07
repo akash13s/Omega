@@ -11,6 +11,26 @@
 
     <groupId>org.dfs</groupId>
     <artifactId>master</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.akash.projects.omega</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.78</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.dfs</groupId>
+            <artifactId>slave</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
