@@ -1,6 +1,7 @@
 package com.akash.projects.dfs.master.service;
 
 import com.akash.projects.common.dfs.model.DfsFile;
+import com.akash.projects.common.dfs.model.DfsNode;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface MasterService extends Remote {
 
-    public void addDfsNode(String registryHost, int registryPort, String serviceName) throws RemoteException;
+    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName) throws RemoteException;
 
     public void createFile(String fileName, int replicas) throws RemoteException;
 

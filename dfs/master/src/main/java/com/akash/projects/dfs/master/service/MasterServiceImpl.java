@@ -1,22 +1,24 @@
 package com.akash.projects.dfs.master.service;
 
 import com.akash.projects.common.dfs.model.DfsFile;
+import com.akash.projects.common.dfs.model.DfsNode;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-public class MasterServiceImpl extends UnicastRemoteObject implements MasterService{
+public class MasterServiceImpl extends UnicastRemoteObject implements MasterService {
 
     private DfsMetaData dfsMetaData;
 
     public MasterServiceImpl() throws RemoteException {
+        super();
         this.dfsMetaData = new DfsMetaData();
     }
 
     @Override
-    public void addDfsNode(String registryHost, int registryPort, String serviceName) throws RemoteException{
-        dfsMetaData.addDfsNode(registryHost, registryPort, serviceName);
+    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName) throws RemoteException{
+        return dfsMetaData.updateDfsNode(registryHost, registryPort, serviceName);
     }
 
     @Override

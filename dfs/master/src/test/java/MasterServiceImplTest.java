@@ -1,4 +1,6 @@
 import com.akash.projects.common.dfs.model.DfsFile;
+import com.akash.projects.common.dfs.model.DfsNode;
+import com.akash.projects.dfs.master.service.DfsMetaData;
 import com.akash.projects.dfs.master.service.MasterServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,6 +9,7 @@ import org.junit.Test;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 public class MasterServiceImplTest {
 
@@ -53,4 +56,12 @@ public class MasterServiceImplTest {
         List<DfsFile> files = masterService.listFiles();
         Assert.assertEquals(2, files.size());
     }
+
+//    @Test
+//    public void testAddDfsNode() throws RemoteException {
+//        DfsNode node = masterService.addDfsNode("192.168.0.102", 8076, "worker-1");
+//        Assert.assertNotNull(node);
+//        Map<Long, DfsNode> nodeMap = DfsMetaData.getNodeMap();
+//        Assert.assertEquals("worker-1", nodeMap.get(node.getId()).getServiceName());
+//    }
 }

@@ -10,8 +10,8 @@ import java.rmi.registry.Registry;
 public class DummyClient {
 
     public static void main(String[] args) throws IOException, NotBoundException {
-        Registry registry = LocateRegistry.getRegistry(Utils.getHost(), 5000);
-        SlaveService slave = (SlaveService) registry.lookup("slave1");
+        Registry registry = LocateRegistry.getRegistry(Utils.getHost(), 9000);
+        SlaveService slave = (SlaveService) registry.lookup("worker-1");
         byte[] data = slave.readChunk(0, 0, 12);
         String str = new String(data);
         System.out.println(str);

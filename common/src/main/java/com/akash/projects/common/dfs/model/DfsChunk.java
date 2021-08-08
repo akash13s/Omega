@@ -1,11 +1,12 @@
 package com.akash.projects.common.dfs.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class DfsChunk {
+public class DfsChunk implements Serializable {
 
     private long id;
     private long fileId;

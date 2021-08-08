@@ -1,7 +1,9 @@
 package com.akash.projects.dfs.slave;
 
 import com.akash.projects.common.dfs.Utils;
+import com.akash.projects.dfs.master.service.MasterService;
 import com.akash.projects.dfs.slave.constants.SlaveConstants;
+import com.akash.projects.dfs.slave.service.HeartbeatService;
 import com.akash.projects.dfs.slave.service.SlaveService;
 import com.akash.projects.dfs.slave.service.SlaveServiceImpl;
 import com.beust.jcommander.JCommander;
@@ -11,9 +13,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.UnknownHostException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class DFSSlave {
 
@@ -21,10 +27,10 @@ public class DFSSlave {
     private String masterRegistryHost = SlaveConstants.MASTER_REGISTRY_HOST;
 
     @Parameter(names = {"--master-registry-port", "-mrp"}, description = "Master registry port")
-    private int masterRegistryPort = SlaveConstants.DEFAULT_REGISTRY_PORT;
+    private int masterRegistryPort = SlaveConstants.DEFAULT_MASTER_REGISTRY_PORT;
 
     @Parameter(names = {"--registry-port", "-rp"}, description = "Registry port of slave")
-    private int registryPort = SlaveConstants.DEFAULT_REGISTRY_PORT;
+    private int registryPort = SlaveConstants.DEFAULT_SLAVE_REGISTRY_PORT;
 
     @Parameter(names = {"--service-name", "-sn"}, description = "Service name of slave", required = true)
     private String serviceName;
@@ -36,6 +42,10 @@ public class DFSSlave {
     private String slaveDataPath = SlaveConstants.SLAVE_DATA_PATH;
 
     private SlaveService slaveService;
+
+    private MasterService masterService;
+
+    private ScheduledExecutorService scheduledExecutorService;
 
     public String getMasterRegistryHost() {
         return masterRegistryHost;
@@ -101,7 +111,7 @@ public class DFSSlave {
         return baseDataPath + System.getProperty("file.separator") + SlaveConstants.CHUNK_PREFIX + chunkId;
     }
 
-    private void start() throws RemoteException, UnknownHostException {
+    private void start() throws RemoteException, UnknownHostException, NotBoundException {
         File file = new File(slaveDataPath);
         if (!file.exists()) {
             file.mkdirs();
@@ -110,6 +120,12 @@ public class DFSSlave {
         slaveService = new SlaveServiceImpl(this);
         Registry registry = LocateRegistry.getRegistry(Utils.getHost(), registryPort);
         registry.rebind(serviceName, slaveService);
+
+        Registry masterRegistry = LocateRegistry.getRegistry(masterRegistryHost, masterRegistryPort);
+        masterService = (MasterService) masterRegistry.lookup(MasterService.class.getCanonicalName());
+        scheduledExecutorService = Executors.newScheduledThreadPool(SlaveConstants.DEFAULT_THREAD_POOL_SIZE);
+        scheduledExecutorService.scheduleAtFixedRate(new HeartbeatService(this, masterRegistry), 0,
+                SlaveConstants.HEARTBEAT_PERIOD, TimeUnit.MILLISECONDS);
     }
 
     public static void main(String[] args) {

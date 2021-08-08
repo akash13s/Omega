@@ -27,13 +27,21 @@ public class DfsMetaData {
         chunkMap = new HashMap<>();
     }
 
-    public void addDfsNode(String registryHost, int registryPort, String serviceName) {
-        DfsNode node = new DfsNode(DfsNode.counter.incrementAndGet(), registryHost, registryPort, serviceName);
+    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName) {
         String key = registryHost + ":" + registryPort;
+        DfsNode node;
         if (!nodeIds.containsKey(key)) {
+            node = new DfsNode(DfsNode.counter.incrementAndGet(), registryHost, registryPort, serviceName, new Date());
             nodeIds.put(key, node.getId());
             nodeMap.put(node.getId(), node);
         }
+        else {
+            Long nodeId = nodeIds.get(key);
+            node = nodeMap.get(nodeId);
+            node.setLastActiveDate(new Date());
+            nodeMap.put(nodeId, node);
+        }
+        return node;
     }
 
     public static void removeDfsNode(String registryHost, int registryPort, String serviceName) {

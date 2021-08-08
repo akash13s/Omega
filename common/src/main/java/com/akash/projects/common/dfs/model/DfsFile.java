@@ -1,12 +1,13 @@
 package com.akash.projects.common.dfs.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-public class DfsFile {
+public class DfsFile implements Serializable {
 
     private long id;
     private String fileName;
