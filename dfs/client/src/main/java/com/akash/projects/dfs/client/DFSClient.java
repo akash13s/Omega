@@ -1,6 +1,7 @@
 package com.akash.projects.dfs.client;
 
 import com.akash.projects.common.dfs.constants.MasterRegistryInfo;
+import com.akash.projects.dfs.client.constants.ClientConstants;
 import com.akash.projects.dfs.client.service.ClientService;
 import com.akash.projects.dfs.client.service.ClientServiceImpl;
 import com.akash.projects.dfs.master.service.MasterService;
@@ -51,6 +52,7 @@ public class DFSClient {
                     handleDeleteFile(br);
                     break;
                 case 5:
+                    br.close();
                     System.exit(0);
                 default:
                     System.out.println("Please enter valid option");
@@ -65,7 +67,8 @@ public class DFSClient {
         int replicas = Integer.parseInt(br.readLine());
         System.out.println("Is the file text/non-text? Enter : yes/no");
         boolean isTextFile = br.readLine().equalsIgnoreCase("yes");
-        clientService.putFile(localFilePath, replicas, isTextFile);
+        clientService.loadFile(localFilePath, replicas, isTextFile,
+                ClientConstants.DEFAULT_BLOCK_SIZE, ClientConstants.DEFAULT_LINE_COUNT);
     }
 
     private void handleGetFile(BufferedReader br) throws IOException {

@@ -53,10 +53,11 @@ public class DfsMetaData {
         }
     }
 
-    public void createFile(String fileName, int replicas) {
+    public DfsFile createFile(String fileName, int replicas) {
         DfsFile dfsFile = new DfsFile(DfsFile.counter.incrementAndGet(), fileName, replicas);
         fileMap.put(fileName, dfsFile);
         fileNameIdMap.put(dfsFile.getId(), fileName);
+        return dfsFile;
     }
 
     public void deleteFile(Long fileId) {
@@ -69,23 +70,24 @@ public class DfsMetaData {
         fileMap.remove(fileName);
     }
 
-    public boolean createChunk(long fileId, long offset, int size) {
+    public DfsChunk createChunk(long fileId, long offset, int size) {
         String fileName = fileNameIdMap.get(fileId);
         DfsFile dfsFile = fileMap.get(fileName);
+        DfsChunk dfsChunk = null;
         if (Objects.nonNull(dfsFile)) {
             long chunkId = DfsChunk.counter.incrementAndGet();
-            DfsChunk dfsChunk = new DfsChunk(chunkId, fileId, offset, size);
+            dfsChunk = new DfsChunk(chunkId, fileId, offset, size);
             // allocate data nodes for the chunk
             List<DfsNode> nodes = allocateDataNodes(dfsFile.getReplicas());
             if (nodes.isEmpty()) {
-                return false;
+                return null;
             }
             dfsChunk.setNodes(nodes);
             dfsFile.getChunks().add(dfsChunk);
             fileMap.put(fileName, dfsFile);
             chunkMap.put(chunkId, dfsChunk);
         }
-        return true;
+        return dfsChunk;
     }
 
     private List<DfsNode> allocateDataNodes(int replicas) {

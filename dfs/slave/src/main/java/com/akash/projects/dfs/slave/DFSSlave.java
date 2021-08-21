@@ -86,7 +86,6 @@ public class DFSSlave {
             RandomAccessFile file = new RandomAccessFile(getFilePath(chunkId, isTest), "rw");
             file.seek(offset);
             file.write(data, (int) offset, Math.min(data.length, size));
-            file.write(data);
             file.close();
             return true;
         }
