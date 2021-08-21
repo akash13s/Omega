@@ -1,6 +1,7 @@
 package com.akash.projects.dfs.slave;
 
 import com.akash.projects.common.dfs.Utils;
+import com.akash.projects.common.dfs.constants.MasterRegistryInfo;
 import com.akash.projects.dfs.master.service.MasterService;
 import com.akash.projects.dfs.slave.constants.SlaveConstants;
 import com.akash.projects.dfs.slave.service.HeartbeatService;
@@ -24,10 +25,10 @@ import java.util.concurrent.TimeUnit;
 public class DFSSlave {
 
     @Parameter(names = {"--master-registry-host", "-mrh"}, description = "Master registry host")
-    private String masterRegistryHost = SlaveConstants.MASTER_REGISTRY_HOST;
+    private String masterRegistryHost = MasterRegistryInfo.DEFAULT_REGISTRY_HOST;
 
     @Parameter(names = {"--master-registry-port", "-mrp"}, description = "Master registry port")
-    private int masterRegistryPort = SlaveConstants.DEFAULT_MASTER_REGISTRY_PORT;
+    private int masterRegistryPort = MasterRegistryInfo.DEFAULT_REGISTRY_PORT;
 
     @Parameter(names = {"--registry-port", "-rp"}, description = "Registry port of slave")
     private int registryPort = SlaveConstants.DEFAULT_SLAVE_REGISTRY_PORT;

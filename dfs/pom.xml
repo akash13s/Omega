@@ -15,6 +15,7 @@
         <module>master</module>
         <module>slave</module>
         <module>common</module>
+        <module>client</module>
     </modules>
 
     <properties>

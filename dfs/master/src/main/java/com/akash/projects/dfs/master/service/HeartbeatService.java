@@ -18,7 +18,7 @@ public class HeartbeatService implements Runnable{
         Date currentDate = new Date();
         nodeMap.values().forEach(dfsNode -> {
             long diffInMillis = Math.abs(currentDate.getTime() - dfsNode.getLastActiveDate().getTime());
-            if (diffInMillis>= MasterConstants.DEFAULT_TIME_PERIOD) {
+            if (diffInMillis > MasterConstants.DEFAULT_TIME_PERIOD) {
                 System.out.println("Removing " + dfsNode.getServiceName() + " : heartbeat NOT OK");
                 DfsMetaData.removeDfsNode(dfsNode.getRegistryHost(), dfsNode.getRegistryPort(), dfsNode.getServiceName());
             }
