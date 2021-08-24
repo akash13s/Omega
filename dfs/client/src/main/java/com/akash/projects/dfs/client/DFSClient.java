@@ -33,7 +33,7 @@ public class DFSClient {
         clientService = new ClientServiceImpl(masterService);
     }
 
-    private void handleUserOperations() throws IOException {
+    private void handleUserOperations() throws IOException, NotBoundException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         while(true) {
             System.out.println("Press 1 to load file, 2 to get file, 3 to list files, 4 to  delete file, 5 to  exit");
@@ -71,13 +71,13 @@ public class DFSClient {
                 ClientConstants.DEFAULT_BLOCK_SIZE, ClientConstants.DEFAULT_LINE_COUNT);
     }
 
-    private void handleGetFile(BufferedReader br) throws IOException {
+    private void handleGetFile(BufferedReader br) throws IOException, NotBoundException {
         System.out.println("Enter the name of file which you want to retrieve");
         String fileName = br.readLine();
         clientService.getFile(fileName);
     }
 
-    private void handleListFiles() {
+    private void handleListFiles() throws RemoteException {
         clientService.listFiles();
     }
 

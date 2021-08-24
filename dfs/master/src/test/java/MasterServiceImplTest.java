@@ -30,7 +30,7 @@ public class MasterServiceImplTest {
         masterService.createFile("hello.txt", 3);
         DfsFile file = masterService.getFile("hello.txt");
         Assert.assertNotNull(file);
-        masterService.deleteFile(file.getId());
+        masterService.deleteFile(file.getFileName());
         DfsFile newFile = masterService.getFile("file1.txt");
         Assert.assertNull(newFile);
     }
@@ -50,7 +50,7 @@ public class MasterServiceImplTest {
     public void testListFiles() throws RemoteException {
         masterService.createFile("file1.txt", 3);
         masterService.createFile("file2.txt", 2);
-        List<DfsFile> files = masterService.listFiles();
+        List<String> files = masterService.listFiles();
         Assert.assertEquals(2, files.size());
     }
 

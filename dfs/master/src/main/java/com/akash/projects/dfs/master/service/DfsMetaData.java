@@ -60,13 +60,13 @@ public class DfsMetaData {
         return dfsFile;
     }
 
-    public void deleteFile(Long fileId) {
-        String fileName = fileNameIdMap.get(fileId);
-        List<DfsChunk> chunkList = fileMap.get(fileName).getChunks();
+    public void deleteFile(String fileName) {
+        DfsFile dfsFile = fileMap.get(fileName);
+        List<DfsChunk> chunkList = dfsFile.getChunks();
         if (!chunkList.isEmpty()) {
             chunkList.forEach(chunk->chunkMap.remove(chunk.getId()));
         }
-        fileNameIdMap.remove(fileId);
+        fileNameIdMap.remove(dfsFile.getId());
         fileMap.remove(fileName);
     }
 
@@ -104,9 +104,10 @@ public class DfsMetaData {
         return fileMap.get(fileName);
     }
 
-    public List<DfsFile> listFiles() {
-        List<DfsFile> fileList = new ArrayList<>(fileMap.values());
-        return fileList;
+    public List<String> listFiles() {
+        List<String> fileNames = new ArrayList<>();
+        fileMap.values().forEach(file->fileNames.add(file.getFileName()));
+        return fileNames;
     }
 
     public static Map<Long, DfsNode> getNodeMap() {

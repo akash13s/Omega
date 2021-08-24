@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
+import java.util.Objects;
 
 public class ClientServiceImpl implements ClientService {
 
@@ -92,12 +93,16 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+    private SlaveService getSlaveService(DfsNode node) throws RemoteException, NotBoundException {
+        Registry slaveRegistry = LocateRegistry.getRegistry(node.getRegistryHost(), node.getRegistryPort());
+        return (SlaveService) slaveRegistry.lookup(node.getServiceName());
+    }
+
     private boolean writeChunk(byte[] data, DfsChunk dfsChunk) {
         List<DfsNode> nodes = dfsChunk.getNodes();
         for (DfsNode node: nodes) {
             try {
-                Registry slaveRegistry = LocateRegistry.getRegistry(node.getRegistryHost(), node.getRegistryPort());
-                SlaveService slaveService = (SlaveService) slaveRegistry.lookup(node.getServiceName());
+                SlaveService slaveService = getSlaveService(node);
                 boolean write = slaveService.writeChunk(dfsChunk.getId(), 0, data.length, data);
                 if (!write) {
                     return false;
@@ -111,17 +116,53 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void getFile(String fileName) {
-
+    public void getFile(String fileName) throws IOException, NotBoundException {
+        DfsFile dfsFile = masterService.getFile(fileName);
+        if (Objects.isNull(dfsFile)) {
+            System.out.println("File not found!");
+            return;
+        }
+        List<DfsChunk> dfsChunks = dfsFile.getChunks();
+        dfsChunks.sort((c1, c2) -> (int) (c1.getOffset() - c2.getOffset()));
+        boolean success = true;
+        for (DfsChunk dfsChunk: dfsChunks) {
+            int size = dfsChunk.getNodes().size();
+            int failedAttempts = 0;
+            for (DfsNode dfsNode: dfsChunk.getNodes()) {
+                try {
+                    SlaveService slaveService = getSlaveService(dfsNode);
+                    byte[] data = slaveService.readChunk(dfsChunk.getId(), dfsChunk.getOffset(), dfsChunk.getSize());
+                    String str;
+                    if (data.length > 0) {
+                        str = new String(data);
+                        System.out.println(str);
+                    }
+                    break;
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    failedAttempts++;
+                    if (failedAttempts == size) {
+                        System.out.println("Unable to retrieve file!");
+                        success = false;
+                    }
+                }
+            }
+            if (!success) {
+                break;
+            }
+        }
     }
 
     @Override
-    public void listFiles() {
-
+    public void listFiles() throws RemoteException {
+        List<String> fileNames = masterService.listFiles();
+        fileNames.forEach(System.out::println);
     }
 
     @Override
-    public void deleteFile(String fileName) {
-
+    public void deleteFile(String fileName) throws RemoteException {
+        masterService.deleteFile(fileName);
+        // call delete directly from master -> parallelize delete operation while deleting a chunk from various nodes
     }
 }

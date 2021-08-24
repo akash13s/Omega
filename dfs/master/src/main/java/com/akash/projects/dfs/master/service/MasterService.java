@@ -14,11 +14,11 @@ public interface MasterService extends Remote {
 
     public DfsFile createFile(String fileName, int replicas) throws RemoteException;
 
-    public void deleteFile(long fileId) throws RemoteException;
+    public void deleteFile(String fileName) throws RemoteException;
 
     public DfsChunk createChunk(long fileId, long offset, int size) throws RemoteException;
 
     public DfsFile getFile(String fileName) throws RemoteException;
 
-    public List<DfsFile> listFiles() throws RemoteException;
+    public List<String> listFiles() throws RemoteException;
 }

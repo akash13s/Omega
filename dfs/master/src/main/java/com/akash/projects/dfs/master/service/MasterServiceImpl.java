@@ -28,8 +28,8 @@ public class MasterServiceImpl extends UnicastRemoteObject implements MasterServ
     }
 
     @Override
-    public void deleteFile(long fileId) throws RemoteException {
-        dfsMetaData.deleteFile(fileId);
+    public void deleteFile(String fileName) throws RemoteException {
+        dfsMetaData.deleteFile(fileName);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MasterServiceImpl extends UnicastRemoteObject implements MasterServ
     }
 
     @Override
-    public List<DfsFile> listFiles() throws RemoteException {
+    public List<String> listFiles() throws RemoteException {
         return dfsMetaData.listFiles();
     }
 
