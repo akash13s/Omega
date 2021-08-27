@@ -3,8 +3,11 @@ package com.akash.projects.dfs.master.service;
 import com.akash.projects.common.dfs.model.DfsChunk;
 import com.akash.projects.common.dfs.model.DfsFile;
 import com.akash.projects.common.dfs.model.DfsNode;
+import com.akash.projects.dfs.master.constants.MasterConstants;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DfsMetaData {
 
@@ -19,12 +22,15 @@ public class DfsMetaData {
     // <chunkId, dfsChunk>
     private static Map<Long, DfsChunk> chunkMap;
 
+    private ExecutorService executorService;
+
     public DfsMetaData() {
         nodeIds = new HashMap<>();
         nodeMap = new HashMap<>();
         fileMap = new HashMap<>();
         fileNameIdMap = new HashMap<>();
         chunkMap = new HashMap<>();
+        executorService = Executors.newFixedThreadPool(MasterConstants.DEFAULT_THREAD_POOL_SIZE);
     }
 
     public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName) {
@@ -64,7 +70,9 @@ public class DfsMetaData {
         DfsFile dfsFile = fileMap.get(fileName);
         List<DfsChunk> chunkList = dfsFile.getChunks();
         if (!chunkList.isEmpty()) {
-            chunkList.forEach(chunk->chunkMap.remove(chunk.getId()));
+            chunkList.forEach(chunk-> {
+                executorService.execute(new RemoveChunkService(chunk));
+            });
         }
         fileNameIdMap.remove(dfsFile.getId());
         fileMap.remove(fileName);

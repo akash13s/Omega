@@ -4,7 +4,7 @@ import com.akash.projects.common.dfs.model.DfsChunk;
 import com.akash.projects.common.dfs.model.DfsFile;
 import com.akash.projects.common.dfs.model.DfsNode;
 import com.akash.projects.dfs.master.service.MasterService;
-import com.akash.projects.dfs.slave.service.SlaveService;
+import com.akash.projects.common.dfs.service.SlaveService;
 
 import java.io.*;
 import java.rmi.NotBoundException;

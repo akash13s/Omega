@@ -1,4 +1,4 @@
-package com.akash.projects.dfs.slave.service;
+package com.akash.projects.common.dfs.service;
 
 import java.io.IOException;
 import java.rmi.Remote;

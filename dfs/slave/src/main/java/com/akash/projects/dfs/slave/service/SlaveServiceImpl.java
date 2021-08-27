@@ -1,12 +1,13 @@
 package com.akash.projects.dfs.slave.service;
 
+import com.akash.projects.common.dfs.service.SlaveService;
 import com.akash.projects.dfs.slave.DFSSlave;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class SlaveServiceImpl extends UnicastRemoteObject implements SlaveService{
+public class SlaveServiceImpl extends UnicastRemoteObject implements SlaveService {
 
     private DFSSlave slave;
 

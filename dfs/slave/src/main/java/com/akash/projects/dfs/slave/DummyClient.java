@@ -1,7 +1,7 @@
 package com.akash.projects.dfs.slave;
 
 import com.akash.projects.common.dfs.Utils;
-import com.akash.projects.dfs.slave.service.SlaveService;
+import com.akash.projects.common.dfs.service.SlaveService;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;

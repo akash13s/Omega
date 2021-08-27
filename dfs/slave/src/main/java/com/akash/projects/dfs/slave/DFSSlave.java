@@ -5,7 +5,7 @@ import com.akash.projects.common.dfs.constants.MasterRegistryInfo;
 import com.akash.projects.dfs.master.service.MasterService;
 import com.akash.projects.dfs.slave.constants.SlaveConstants;
 import com.akash.projects.dfs.slave.service.HeartbeatService;
-import com.akash.projects.dfs.slave.service.SlaveService;
+import com.akash.projects.common.dfs.service.SlaveService;
 import com.akash.projects.dfs.slave.service.SlaveServiceImpl;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
