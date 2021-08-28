@@ -47,7 +47,7 @@ public class ClientServiceImpl implements ClientService {
                 count++;
                 sb.append(line).append("\n");
                 if (count % lineCount == 0) {
-                    DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length());
+                    DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length(), sb.length());
                     if (dfsChunk != null) {
                         byte[] data = sb.toString().getBytes();
                         writeChunk(data, dfsChunk);
@@ -62,7 +62,7 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         if (sb.length()!=0) {
-            DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length());
+            DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length(), sb.length());
             if (dfsChunk != null) {
                 byte[] data = sb.toString().getBytes();
                 writeChunk(data, dfsChunk);
@@ -73,14 +73,15 @@ public class ClientServiceImpl implements ClientService {
     private void writeFile(String localFilePath, int replicas, long blockSize) throws IOException {
         FileInputStream fis = new FileInputStream(new File(localFilePath));
         DfsFile dfsFile = masterService.createFile(localFilePath.substring(
-                localFilePath.lastIndexOf('/')), replicas);
+                localFilePath.lastIndexOf('/') + 1), replicas);
         long offset = 0;
         while (true) {
             byte[] data = new byte[(int) blockSize];
             int sz = fis.read(data);
             if (sz>0) {
                 // create chunk and write to chunk
-                DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, (int) blockSize);
+                int actualSize = getMeaningfulDataSize(data);
+                DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, (int) blockSize, actualSize);
                 if (dfsChunk!=null) {
                     writeChunk(data, dfsChunk);
                     offset += blockSize;
@@ -91,6 +92,19 @@ public class ClientServiceImpl implements ClientService {
                 break;
             }
         }
+    }
+
+    private int getMeaningfulDataSize(byte[] data) {
+        int size = 0;
+        for (byte x: data) {
+            if (x == 0) {
+                break;
+            }
+            else {
+                size += 1;
+            }
+        }
+        return size;
     }
 
     private SlaveService getSlaveService(DfsNode node) throws RemoteException, NotBoundException {
@@ -131,11 +145,11 @@ public class ClientServiceImpl implements ClientService {
             for (DfsNode dfsNode: dfsChunk.getNodes()) {
                 try {
                     SlaveService slaveService = getSlaveService(dfsNode);
-                    byte[] data = slaveService.readChunk(dfsChunk.getId(), dfsChunk.getOffset(), dfsChunk.getSize());
+                    byte[] data = slaveService.readChunk(dfsChunk.getId(), 0, dfsChunk.getActualSize());
                     String str;
                     if (data.length > 0) {
                         str = new String(data);
-                        System.out.println(str);
+                        System.out.print(str);
                     }
                     break;
                 }
@@ -152,12 +166,19 @@ public class ClientServiceImpl implements ClientService {
                 break;
             }
         }
+        System.out.println();
+        System.out.println("------------------------------------");
     }
 
     @Override
     public void listFiles() throws RemoteException {
         List<String> fileNames = masterService.listFiles();
-        fileNames.forEach(System.out::println);
+        if (!fileNames.isEmpty()) {
+            fileNames.forEach(System.out::println);
+        }
+        else {
+            System.out.println("No files present!");
+        }
     }
 
     @Override

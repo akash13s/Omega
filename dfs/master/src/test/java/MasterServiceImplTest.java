@@ -40,8 +40,8 @@ public class MasterServiceImplTest {
     public void testCreateChunk() throws RemoteException {
         masterService.createFile("hello.txt", 3);
         DfsFile file = masterService.getFile("hello.txt");
-        masterService.createChunk(file.getId(), 0, 10);
-        masterService.createChunk(file.getId(), 10, 10);
+        masterService.createChunk(file.getId(), 0, 10, 10);
+        masterService.createChunk(file.getId(), 10, 10, 10);
         DfsFile newFile = masterService.getFile("hello.txt");
         Assert.assertEquals(0, newFile.getChunks().size());
     }

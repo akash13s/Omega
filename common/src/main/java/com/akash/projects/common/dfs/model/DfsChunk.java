@@ -12,16 +12,18 @@ public class DfsChunk implements Serializable {
     private long fileId;
     private long offset;
     private int size;
+    private int actualSize;
     private Date createdDate;
     private List<DfsNode> nodes;
 
     public static AtomicLong counter = new AtomicLong(0);
 
-    public DfsChunk(long id, long fileId, long offset, int size) {
+    public DfsChunk(long id, long fileId, long offset, int size, int actualSize) {
         this.id = id;
         this.fileId = fileId;
         this.offset = offset;
         this.size = size;
+        this.actualSize = actualSize;
         this.createdDate = new Date();
         this.nodes = new ArrayList<>();
     }
@@ -72,5 +74,13 @@ public class DfsChunk implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public int getActualSize() {
+        return actualSize;
+    }
+
+    public void setActualSize(int actualSize) {
+        this.actualSize = actualSize;
     }
 }

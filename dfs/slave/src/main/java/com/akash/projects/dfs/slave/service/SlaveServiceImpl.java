@@ -17,7 +17,7 @@ public class SlaveServiceImpl extends UnicastRemoteObject implements SlaveServic
 
     @Override
     public byte[] readChunk(long chunkId, long offset, int size) throws IOException {
-        return slave.read(chunkId, offset, size, true);
+        return slave.read(chunkId, offset, size, false);
     }
 
     @Override

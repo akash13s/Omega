@@ -16,7 +16,7 @@ public interface MasterService extends Remote {
 
     public void deleteFile(String fileName) throws RemoteException;
 
-    public DfsChunk createChunk(long fileId, long offset, int size) throws RemoteException;
+    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize) throws RemoteException;
 
     public DfsFile getFile(String fileName) throws RemoteException;
 

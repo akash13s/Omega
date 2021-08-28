@@ -78,13 +78,13 @@ public class DfsMetaData {
         fileMap.remove(fileName);
     }
 
-    public DfsChunk createChunk(long fileId, long offset, int size) {
+    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize) {
         String fileName = fileNameIdMap.get(fileId);
         DfsFile dfsFile = fileMap.get(fileName);
         DfsChunk dfsChunk = null;
         if (Objects.nonNull(dfsFile)) {
             long chunkId = DfsChunk.counter.incrementAndGet();
-            dfsChunk = new DfsChunk(chunkId, fileId, offset, size);
+            dfsChunk = new DfsChunk(chunkId, fileId, offset, size, actualSize);
             // allocate data nodes for the chunk
             List<DfsNode> nodes = allocateDataNodes(dfsFile.getReplicas());
             if (nodes.isEmpty()) {

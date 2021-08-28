@@ -33,8 +33,8 @@ public class MasterServiceImpl extends UnicastRemoteObject implements MasterServ
     }
 
     @Override
-    public DfsChunk createChunk(long fileId, long offset, int size) throws RemoteException {
-        return dfsMetaData.createChunk(fileId, offset, size);
+    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize) throws RemoteException {
+        return dfsMetaData.createChunk(fileId, offset, size, actualSize);
     }
 
     @Override
