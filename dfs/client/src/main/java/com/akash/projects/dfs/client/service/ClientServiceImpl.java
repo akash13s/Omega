@@ -36,7 +36,7 @@ public class ClientServiceImpl implements ClientService {
     private void writeTextFile(String localFilePath, int replicas, long lineCount) throws IOException,
             RemoteException {
         File file = new File(localFilePath);
-        DfsFile dfsFile = masterService.createFile(file.getName(), replicas);
+        DfsFile dfsFile = masterService.createFile(file.getName(), replicas, true);
         BufferedReader br = new BufferedReader(new FileReader(localFilePath));
         StringBuffer sb = new StringBuffer();
         long count = 0;
@@ -47,7 +47,7 @@ public class ClientServiceImpl implements ClientService {
                 count++;
                 sb.append(line).append("\n");
                 if (count % lineCount == 0) {
-                    DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length(), sb.length());
+                    DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length(), sb.length(), true);
                     if (dfsChunk != null) {
                         byte[] data = sb.toString().getBytes();
                         writeChunk(data, dfsChunk);
@@ -62,7 +62,7 @@ public class ClientServiceImpl implements ClientService {
             }
         }
         if (sb.length()!=0) {
-            DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length(), sb.length());
+            DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, sb.length(), sb.length(), true);
             if (dfsChunk != null) {
                 byte[] data = sb.toString().getBytes();
                 writeChunk(data, dfsChunk);
@@ -73,7 +73,7 @@ public class ClientServiceImpl implements ClientService {
     private void writeFile(String localFilePath, int replicas, long blockSize) throws IOException {
         FileInputStream fis = new FileInputStream(new File(localFilePath));
         DfsFile dfsFile = masterService.createFile(localFilePath.substring(
-                localFilePath.lastIndexOf('/') + 1), replicas);
+                localFilePath.lastIndexOf('/') + 1), replicas, true);
         long offset = 0;
         while (true) {
             byte[] data = new byte[(int) blockSize];
@@ -81,7 +81,7 @@ public class ClientServiceImpl implements ClientService {
             if (sz>0) {
                 // create chunk and write to chunk
                 int actualSize = getMeaningfulDataSize(data);
-                DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, (int) blockSize, actualSize);
+                DfsChunk dfsChunk = masterService.createChunk(dfsFile.getId(), offset, (int) blockSize, actualSize, true);
                 if (dfsChunk!=null) {
                     writeChunk(data, dfsChunk);
                     offset += blockSize;
@@ -182,8 +182,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void deleteFile(String fileName) throws RemoteException {
-        masterService.deleteFile(fileName);
+    public void deleteFile(String fileName) throws IOException {
+        masterService.deleteFile(fileName, true);
         // call delete directly from master -> parallelize delete operation while deleting a chunk from various nodes
     }
 }

@@ -4,7 +4,12 @@ import com.akash.projects.common.dfs.model.DfsChunk;
 import com.akash.projects.common.dfs.model.DfsFile;
 import com.akash.projects.common.dfs.model.DfsNode;
 import com.akash.projects.dfs.master.constants.MasterConstants;
+import com.akash.projects.dfs.master.constants.OperationType;
+import com.akash.projects.dfs.master.model.EditOperation;
+import com.akash.projects.dfs.master.utils.EditLogger;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,16 +29,20 @@ public class DfsMetaData {
 
     private ExecutorService executorService;
 
-    public DfsMetaData() {
+    private static EditLogger editLogger;
+
+    public DfsMetaData(EditLogger editLogger) {
         nodeIds = new HashMap<>();
         nodeMap = new HashMap<>();
         fileMap = new HashMap<>();
         fileNameIdMap = new HashMap<>();
         chunkMap = new HashMap<>();
         executorService = Executors.newFixedThreadPool(MasterConstants.DEFAULT_THREAD_POOL_SIZE);
+        DfsMetaData.editLogger = editLogger;
     }
 
-    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName) {
+    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName, boolean writeLog)
+            throws IOException {
         String key = registryHost + ":" + registryPort;
         DfsNode node;
         if (!nodeIds.containsKey(key)) {
@@ -47,26 +56,35 @@ public class DfsMetaData {
             node.setLastActiveDate(new Date());
             nodeMap.put(nodeId, node);
         }
+        if (writeLog) {
+            dispatchLog(OperationType.UPDATE_NODE.getType(), new Object[] {registryHost, registryPort, serviceName});
+        }
         return node;
     }
 
-    public static void removeDfsNode(String registryHost, int registryPort, String serviceName) {
+    public static void removeDfsNode(String registryHost, int registryPort, String serviceName, boolean writeLog) throws IOException {
         String key = registryHost + ":" + registryPort;
         if (nodeIds.containsKey(key)) {
             Long id = nodeIds.get(key);
             nodeIds.remove(key);
             nodeMap.remove(id);
+            if (writeLog) {
+                dispatchLog(OperationType.REMOVE_NODE.getType(), new Object[] {registryHost, registryPort, serviceName});
+            }
         }
     }
 
-    public DfsFile createFile(String fileName, int replicas) {
+    public DfsFile createFile(String fileName, int replicas, boolean writeLog) throws IOException {
         DfsFile dfsFile = new DfsFile(DfsFile.counter.incrementAndGet(), fileName, replicas);
         fileMap.put(fileName, dfsFile);
         fileNameIdMap.put(dfsFile.getId(), fileName);
+        if (writeLog) {
+            dispatchLog(OperationType.CREATE_FILE.getType(), new Object[] {fileName, replicas});
+        }
         return dfsFile;
     }
 
-    public void deleteFile(String fileName) {
+    public void deleteFile(String fileName, boolean writeLog) throws IOException {
         DfsFile dfsFile = fileMap.get(fileName);
         List<DfsChunk> chunkList = dfsFile.getChunks();
         if (!chunkList.isEmpty()) {
@@ -76,9 +94,12 @@ public class DfsMetaData {
         }
         fileNameIdMap.remove(dfsFile.getId());
         fileMap.remove(fileName);
+        if (writeLog) {
+            dispatchLog(OperationType.DELETE_FILE.getType(), new Object[] {fileName});
+        }
     }
 
-    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize) {
+    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize, boolean writeLog) throws IOException {
         String fileName = fileNameIdMap.get(fileId);
         DfsFile dfsFile = fileMap.get(fileName);
         DfsChunk dfsChunk = null;
@@ -94,6 +115,9 @@ public class DfsMetaData {
             dfsFile.getChunks().add(dfsChunk);
             fileMap.put(fileName, dfsFile);
             chunkMap.put(chunkId, dfsChunk);
+            if (writeLog) {
+                dispatchLog(OperationType.CREATE_CHUNK.getType(), new Object[] {fileId, offset, size, actualSize});
+            }
         }
         return dfsChunk;
     }
@@ -122,4 +146,8 @@ public class DfsMetaData {
         return nodeMap;
     }
 
+    private static void dispatchLog(String operation, Object[] arguments) throws IOException {
+        EditOperation editOperation = new EditOperation(Date.from(Instant.now()).toString(), operation, arguments);
+        editLogger.addOperation(editOperation);
+    }
 }

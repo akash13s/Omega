@@ -3,7 +3,9 @@ package com.akash.projects.dfs.master.service;
 import com.akash.projects.common.dfs.model.DfsChunk;
 import com.akash.projects.common.dfs.model.DfsFile;
 import com.akash.projects.common.dfs.model.DfsNode;
+import com.akash.projects.dfs.master.utils.EditLogger;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
@@ -12,29 +14,32 @@ public class MasterServiceImpl extends UnicastRemoteObject implements MasterServ
 
     private DfsMetaData dfsMetaData;
 
-    public MasterServiceImpl() throws RemoteException {
+    public MasterServiceImpl(EditLogger editLogger) throws RemoteException {
         super();
-        this.dfsMetaData = new DfsMetaData();
+        this.dfsMetaData = new DfsMetaData(editLogger);
     }
 
     @Override
-    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName) throws RemoteException{
-        return dfsMetaData.updateDfsNode(registryHost, registryPort, serviceName);
+    public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName, boolean writeLog)
+            throws IOException {
+        return dfsMetaData.updateDfsNode(registryHost, registryPort, serviceName, writeLog);
     }
 
     @Override
-    public DfsFile createFile(String fileName, int replicas) throws RemoteException {
-        return dfsMetaData.createFile(fileName, replicas);
+    public DfsFile createFile(String fileName, int replicas, boolean writeLog)
+            throws IOException {
+        return dfsMetaData.createFile(fileName, replicas, writeLog);
     }
 
     @Override
-    public void deleteFile(String fileName) throws RemoteException {
-        dfsMetaData.deleteFile(fileName);
+    public void deleteFile(String fileName, boolean writeLog) throws IOException {
+        dfsMetaData.deleteFile(fileName, writeLog);
     }
 
     @Override
-    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize) throws RemoteException {
-        return dfsMetaData.createChunk(fileId, offset, size, actualSize);
+    public DfsChunk createChunk(long fileId, long offset, int size, int actualSize, boolean writeLog)
+            throws IOException {
+        return dfsMetaData.createChunk(fileId, offset, size, actualSize, writeLog);
     }
 
     @Override

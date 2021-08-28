@@ -12,5 +12,5 @@ public interface ClientService {
 
     public void listFiles() throws RemoteException;
 
-    public void deleteFile(String fileName) throws RemoteException;
+    public void deleteFile(String fileName) throws IOException;
 }

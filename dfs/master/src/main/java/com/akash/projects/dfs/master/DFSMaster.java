@@ -6,9 +6,11 @@ import com.akash.projects.dfs.master.constants.MasterConstants;
 import com.akash.projects.dfs.master.service.HeartbeatService;
 import com.akash.projects.dfs.master.service.MasterService;
 import com.akash.projects.dfs.master.service.MasterServiceImpl;
+import com.akash.projects.dfs.master.utils.EditLogger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -32,6 +34,8 @@ public class DFSMaster {
 
     private ScheduledExecutorService scheduledExecutorService;
 
+    private EditLogger editLogger;
+
     public String getMasterRegistryHost() {
         return masterRegistryHost;
     }
@@ -44,9 +48,10 @@ public class DFSMaster {
         return logPath;
     }
 
-    private void start() throws RemoteException, UnknownHostException {
+    private void start() throws IOException {
         LocateRegistry.createRegistry(masterRegistryPort);
-        masterService = new MasterServiceImpl();
+        editLogger = new EditLogger(logPath);
+        masterService = new MasterServiceImpl(editLogger);
         Registry registry = LocateRegistry.getRegistry(Utils.getHost(), masterRegistryPort);
         registry.rebind(MasterService.class.getCanonicalName(), masterService);
         scheduledExecutorService = Executors.newScheduledThreadPool(MasterConstants.DEFAULT_THREAD_POOL_SIZE);

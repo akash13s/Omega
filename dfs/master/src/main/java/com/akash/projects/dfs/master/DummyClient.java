@@ -13,6 +13,6 @@ public class DummyClient {
     public static void main(String[] args) throws IOException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(Utils.getHost(), 8085);
         MasterService masterService = (MasterService) registry.lookup(MasterService.class.getCanonicalName());
-        masterService.updateDfsNode("localhost", 8880, "dummy-worker");
+        masterService.updateDfsNode("localhost", 8880, "dummy-worker", false);
     }
 }
