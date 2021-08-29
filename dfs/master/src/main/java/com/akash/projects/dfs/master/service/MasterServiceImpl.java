@@ -14,7 +14,7 @@ public class MasterServiceImpl extends UnicastRemoteObject implements MasterServ
 
     private DfsMetaData dfsMetaData;
 
-    public MasterServiceImpl(EditLogger editLogger) throws RemoteException {
+    public MasterServiceImpl(EditLogger editLogger) throws IOException {
         super();
         this.dfsMetaData = new DfsMetaData(editLogger);
     }

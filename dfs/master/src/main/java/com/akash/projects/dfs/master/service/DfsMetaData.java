@@ -7,7 +7,10 @@ import com.akash.projects.dfs.master.constants.MasterConstants;
 import com.akash.projects.dfs.master.constants.OperationType;
 import com.akash.projects.dfs.master.model.EditOperation;
 import com.akash.projects.dfs.master.utils.EditLogger;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -31,7 +34,7 @@ public class DfsMetaData {
 
     private static EditLogger editLogger;
 
-    public DfsMetaData(EditLogger editLogger) {
+    public DfsMetaData(EditLogger editLogger) throws IOException {
         nodeIds = new HashMap<>();
         nodeMap = new HashMap<>();
         fileMap = new HashMap<>();
@@ -39,6 +42,7 @@ public class DfsMetaData {
         chunkMap = new HashMap<>();
         executorService = Executors.newFixedThreadPool(MasterConstants.DEFAULT_THREAD_POOL_SIZE);
         DfsMetaData.editLogger = editLogger;
+        recoverMetaDataFromLogs();
     }
 
     public DfsNode updateDfsNode(String registryHost, int registryPort, String serviceName, boolean writeLog)
@@ -149,5 +153,37 @@ public class DfsMetaData {
     private static void dispatchLog(String operation, Object[] arguments) throws IOException {
         EditOperation editOperation = new EditOperation(Date.from(Instant.now()).toString(), operation, arguments);
         editLogger.addOperation(editOperation);
+    }
+
+    private void recoverMetaDataFromLogs() throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(editLogger.getLogPath()));
+        ObjectMapper mapper = new ObjectMapper();
+        String line = null;
+        while ((line = br.readLine())!=null) {
+            EditOperation operation = mapper.readValue(line, EditOperation.class);
+            Object[] arguments = operation.getArguments();
+            switch (OperationType.valueOf(operation.getOperationType())) {
+                case CREATE_FILE:
+                    createFile(arguments[0].toString(), Integer.parseInt(arguments[1].toString()), false);
+                    break;
+                case DELETE_FILE:
+                    deleteFile(arguments[0].toString(), false);
+                    break;
+                case CREATE_CHUNK:
+                    createChunk(Integer.parseInt(arguments[0].toString()), Integer.parseInt(arguments[1].toString()),
+                            Integer.parseInt(arguments[2].toString()), Integer.parseInt(arguments[3].toString()), false);
+                    break;
+                case UPDATE_NODE:
+                    updateDfsNode(arguments[0].toString(), Integer.parseInt(arguments[1].toString()),
+                            arguments[2].toString(), false);
+                    break;
+                case REMOVE_NODE:
+                    removeDfsNode(arguments[0].toString(), Integer.parseInt(arguments[1].toString()),
+                            arguments[2].toString(), false);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

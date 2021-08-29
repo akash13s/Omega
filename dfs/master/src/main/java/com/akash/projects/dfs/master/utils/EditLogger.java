@@ -28,4 +28,8 @@ public class EditLogger {
         fileWriter.newLine();
         fileWriter.flush();
     }
+
+    public String getLogPath() {
+        return logPath;
+    }
 }

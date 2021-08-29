@@ -4,5 +4,5 @@ public class MasterConstants {
 
     public static String DEFAULT_LOG_PATH = "/Users/akashshrivastva/Desktop/dfs-master/log/master.log";
     public static int DEFAULT_THREAD_POOL_SIZE = 10;
-    public static int DEFAULT_TIME_PERIOD = 60000;
+    public static int DEFAULT_TIME_PERIOD = 120000;
 }
