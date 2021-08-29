@@ -127,6 +127,7 @@ public class DfsMetaData {
     }
 
     private List<DfsNode> allocateDataNodes(int replicas) {
+        // can apply a suitable algorithm for load balancing
         List<DfsNode> nodes = new ArrayList<>(nodeMap.values());
         Collections.shuffle(nodes);
         List<DfsNode> allocatedNodes = new ArrayList<>();

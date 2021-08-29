@@ -57,7 +57,7 @@ public class DFSMaster {
         LocateRegistry.createRegistry(masterRegistryPort);
         editLogger = new EditLogger(logPath);
         masterService = new MasterServiceImpl(editLogger);
-        Registry registry = LocateRegistry.getRegistry(Utils.getHost(), masterRegistryPort);
+        Registry registry = LocateRegistry.getRegistry(Utils.getLocalHost(), masterRegistryPort);
         registry.rebind(MasterService.class.getCanonicalName(), masterService);
         scheduledExecutorService = Executors.newScheduledThreadPool(MasterConstants.DEFAULT_THREAD_POOL_SIZE);
         scheduledExecutorService.scheduleAtFixedRate(new HeartbeatService(), 0,

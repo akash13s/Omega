@@ -118,7 +118,7 @@ public class DFSSlave {
         }
         LocateRegistry.createRegistry(registryPort);
         slaveService = new SlaveServiceImpl(this);
-        Registry registry = LocateRegistry.getRegistry(Utils.getHost(), registryPort);
+        Registry registry = LocateRegistry.getRegistry(Utils.getLocalHost(), registryPort);
         registry.rebind(serviceName, slaveService);
 
         Registry masterRegistry = LocateRegistry.getRegistry(masterRegistryHost, masterRegistryPort);
