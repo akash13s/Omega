@@ -38,4 +38,5 @@ It has 3 components:
 `Step 3: Run DFSClient.java, add the below VM arguments accordingly and run`<br>
    --master-registry-host <eg: localhost> <br>
    --master-registry-port <eg: 8085> <br>
-   --registryPort <eg: 8081> NOTE: Th<br>
+   --registry-port <eg: 8081> NOTE: This is the slave registry port. In case you are running both the master 
+and slave on same machine, this port number needs to be different from that of master's.<br>
