@@ -36,7 +36,9 @@ It has 3 components:
    --registry-port <eg: 8081> [NOTE: This is the slave registry port. In case you are running both the master
 and slave on same machine, this port number needs to be different from that of master's.]<br>
    --service-name <eg: worker-1> [NOTE: If you are running multiple slaves on the same machine, give each of them
-a different service name]
+a different service name] <br>
+   --slave-data-path <eg: /Users/akashshrivastva/Desktop/dfs>
+
    
 `Step 3: Run DFSClient.java, add the below VM arguments accordingly and run`<br>
    --master-registry-host <eg: localhost> <br>
